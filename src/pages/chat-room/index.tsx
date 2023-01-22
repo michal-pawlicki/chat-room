@@ -5,17 +5,17 @@ import { useEffect } from 'react';
 
 function ChatRoom() {
   const { users, loading } = useUsers();
+  console.log(users);
+  useEffect(() => {
+    let ws: WebSocket;
+    //TODO: check if user is logged in
+    if (true) {
+      //TODO: connect to websocket
+      ws = new WebSocket('ws://localhost:8080');
+    }
 
-  // useEffect(() => {
-  //   let ws: WebSocket;
-  //   //TODO: check if user is logged in
-  //   if (true) {
-  //     //TODO: connect to websocket
-  //     ws = new WebSocket('ws://localhost:8080');
-  //   }
-
-  //   return () => {};
-  // }, []);
+    return () => {};
+  }, []);
 
   if (loading) {
     return (
