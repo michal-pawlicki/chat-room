@@ -1,6 +1,43 @@
 import Head from 'next/head';
+import React, { useState } from 'react';
 
 export default function Home() {
+  const [formValue, setFormValue] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [navBarOpen, setNavBarOpen] = useState(false);
+  const [currentReceiver, setCurrentReceiver] = useState('john');
+  const [currentUser, setCurrentUser] = useState(null);
+  const [socket, setSocket] = useState<WebSocket | null>(null);
+
+  const sendMessage = (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    if (!currentUser) {
+      alert('!!!PLEASE CREATE YOR USERNAME FIRST!!!');
+      return;
+    }
+    const date = new Date();
+    const msg = JSON.stringify({
+      text: formValue,
+      user: currentUser,
+      receiver: currentReceiver,
+      time: date,
+    });
+    if (socket) {
+      socket.send(msg);
+    }
+    setFormValue('');
+  };
+
+  const changeReceiver = (e: React.MouseEvent) => {
+    setCurrentReceiver((e.target as HTMLLIElement).innerText);
+    openNavBar();
+  };
+
+  const openNavBar = () => {
+    setNavBarOpen((prev) => !prev);
+  };
+
   return (
     <>
       <Head>
