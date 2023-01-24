@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export const UsersContext = React.createContext<{
   users: { email: string; id: string }[];
@@ -7,6 +7,17 @@ export const UsersContext = React.createContext<{
 
 function UsersProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let ws: WebSocket;
+    //TODO: check if user is logged in
+    if (true) {
+      //TODO: connect to websocket
+      ws = new WebSocket('ws://localhost:8080');
+    }
+
+    return () => {};
+  }, []);
 
   return (
     <UsersContext.Provider
