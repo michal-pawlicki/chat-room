@@ -42,6 +42,7 @@ function useMessages(receiverId?: string) {
   return useQuery({
     queryFn: async () => await fetchMessages(receiverId, user?.uid),
     queryKey: ["messages", receiverId, user?.uid],
+    refetchInterval: 500,
   });
 }
 

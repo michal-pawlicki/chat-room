@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import useUser from "@/hooks/useUser";
 import { Message } from "@/components/ChatMessage";
-import { client } from "../pages/_app";
 
 export const WS_URL = "ws://localhost:1101";
 export const REST_URL = "http://localhost:1100";
@@ -46,7 +45,6 @@ function SocketProvider({ children }: React.PropsWithChildren) {
 
     ws.onmessage = function (evt) {
       const msg = JSON.parse(evt.data);
-      client.setQueriesData(["messages"], (prev) => [...prev, msg]);
       console.log(msg);
     };
 
