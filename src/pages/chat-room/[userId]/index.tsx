@@ -8,16 +8,20 @@ import { protectedRedirect } from "@/helpers/protectedRedirect";
 import { NextPageContext } from "next";
 import { GetServerSidePropsContext } from "next";
 import useUser from "@/hooks/useUser";
+import { useQuery } from "@tanstack/react-query";
+import useMessages from "@/hooks/useMessages";
 
 function DmChat() {
   const { query } = useRouter();
-  const { users } = useChaters();
-  const socket = useSocket();
+  const { data: users, isLoading: loadingUsers } = useChaters();
+  const { socket } = useSocket();
   const { user } = useUser();
+  const { userId: recieverId } = query;
+  const { data: messages, isLoading: loadingMessages } = useMessages(
+    String(recieverId)
+  );
 
   const text = useRef<HTMLInputElement>(null);
-
-  const { userId: recieverId } = query;
 
   const sendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,20 +36,9 @@ function DmChat() {
       data: new Date().toISOString(),
     };
 
-    socket.send(JSON.stringify({ type: "message", value: message }));
+    socket.send(JSON.stringify({ operation: "/message", value: message }));
     text.current.value = "";
   };
-
-  //TODO: remove mock data and get messages from get messages endpoint
-  const jsx = [...Array(40)].map((item, idx) => (
-    <ChatMessage
-      receiver={idx % 2}
-      date={""}
-      key={idx}
-      sender={idx % 2}
-      text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas alias odit quisquam, illum sapiente optio voluptatum quam beatae quibusdam quasi. "
-    />
-  ));
 
   return (
     <div className=" h-full max-h-screen w-screen items-center bg-slate-800 px-4 text-white">
@@ -53,12 +46,14 @@ function DmChat() {
         <header className="  absolute top-0 left-0 flex w-full items-center justify-between bg-gradient-to-b from-slate-800 via-slate-800/80 py-4">
           <Link href={"/"}>&#8592; back</Link>
           <h1>
-            {users.filter((user) => user.id === recieverId)[0]?.email ?? ""}
+            {users?.filter((user) => user.uid === recieverId)[0]?.email ?? ""}
           </h1>
         </header>
         <div className="flex h-full max-h-screen w-full flex-col-reverse overflow-y-scroll pt-16 pb-4">
           {/* chat messages */}
-          {jsx}
+          {messages?.map((message) => (
+            <ChatMessage {...message} key={message.date + message.text} />
+          ))}
         </div>
         <form onSubmit={sendMessage} className="flex w-full  pb-6">
           <input type="text" className="input flex-grow" ref={text} />

@@ -12,9 +12,9 @@ import { GetServerSidePropsContext } from "next";
 import useSocket from "@/hooks/useSocket";
 
 function ChatRoom() {
-  const { users, loading } = useChaters();
+  const { data: users, isLoading: loading } = useChaters();
   const { user, loading: loadingUser, error: userError } = useUser();
-  const socket = useSocket();
+  const { socket } = useSocket();
 
   const router = useRouter();
 
@@ -56,14 +56,14 @@ function ChatRoom() {
           </button>
         )}
         <div className="mx-auto w-full max-w-xs divide-y rounded-lg border p-2 text-slate-50">
-          {users.map((user) => (
+          {users?.map((user) => (
             <Link
-              key={user.id + user.email}
-              href={"/chat-room/" + encodeURIComponent(user.id)}
+              key={user?.uid + user.email}
+              href={"/chat-room/" + encodeURIComponent(user.uid)}
             >
               <div
                 className="rounded-md px-4 py-2 text-center transition hover:bg-slate-700"
-                key={user.id}
+                key={user.uid}
               >
                 {user.email}
               </div>

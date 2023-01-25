@@ -1,8 +1,20 @@
 import React, { useState } from "react";
 import useUser from "@/hooks/useUser";
-export const WS_URL = "ws://localhost:8080";
+import { Message } from "@/components/ChatMessage";
+import { useQuery } from "@tanstack/react-query";
 
-export const SocketContext = React.createContext<WebSocket | null>(null);
+export const WS_URL = "ws://localhost:1101";
+export const REST_URL = "http://localhost:8081";
+
+type SocketContextType = {
+  socket: WebSocket | null;
+  messages: Message[];
+};
+
+export const SocketContext = React.createContext<SocketContextType>({
+  socket: null,
+  messages: [],
+});
 
 function SocketProvider({ children }: React.PropsWithChildren) {
   const { user, loading, error } = useUser();
@@ -21,8 +33,13 @@ function SocketProvider({ children }: React.PropsWithChildren) {
     const ws = new WebSocket(WS_URL);
 
     ws.onopen = function () {
-      console.log("connected");
-      ws.send(JSON.stringify({ type: "new_connection", user: user.uid }));
+      // ws.send(
+      //   JSON.stringify({
+      //     type: "new_connection",
+      //     userId: user.uid,
+      //     username: user.email,
+      //   })
+      // );
     };
 
     ws.onmessage = function (evt) {
@@ -31,9 +48,7 @@ function SocketProvider({ children }: React.PropsWithChildren) {
       console.log(msg);
     };
 
-    ws.onclose = function () {
-      console.log("disconnected");
-    };
+    ws.onclose = function () {};
 
     setSocket(ws);
 
@@ -43,7 +58,9 @@ function SocketProvider({ children }: React.PropsWithChildren) {
   }, [user, loading, error]);
 
   return (
-    <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>
+    <SocketContext.Provider value={{ socket, messages: [] }}>
+      {children}
+    </SocketContext.Provider>
   );
 }
 

@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 
+export type User = {
+  uid: string;
+  email: string;
+};
+
 export const ChatersContext = React.createContext<{
-  users: { email: string; id: string }[];
+  users: User[];
   loading: boolean;
 }>({ users: [], loading: false });
 
@@ -11,10 +16,7 @@ function ChatersProvider({ children }: { children: React.ReactNode }) {
   return (
     <ChatersContext.Provider
       value={{
-        users: [
-          { email: "kacper.hemperek@email.com", id: "1" },
-          { email: "michał.pawlicki@email.com", id: "2" },
-        ],
+        users: [],
         loading,
       }}
     >
