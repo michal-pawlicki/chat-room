@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import useUser from "@/hooks/useUser";
 import { Message } from "@/components/ChatMessage";
-import { useQuery } from "@tanstack/react-query";
+import { client } from "../pages/_app";
 
 export const WS_URL = "ws://localhost:1101";
-export const REST_URL = "http://localhost:8081";
+export const REST_URL = "http://localhost:1100";
 
 type SocketContextType = {
   socket: WebSocket | null;
@@ -21,41 +21,45 @@ function SocketProvider({ children }: React.PropsWithChildren) {
   const [socket, setSocket] = useState<WebSocket | null>(null);
 
   React.useEffect(() => {
-    if (loading || error || !user) {
-      return;
-    }
-    if (!user && socket) {
+    if (socket) {
       return () => {
         socket.close();
       };
     }
 
+    if (!user) {
+      return;
+    }
+
     const ws = new WebSocket(WS_URL);
 
     ws.onopen = function () {
-      // ws.send(
-      //   JSON.stringify({
-      //     type: "new_connection",
-      //     userId: user.uid,
-      //     username: user.email,
-      //   })
-      // );
+      console.log("connected");
+      ws.send(
+        JSON.stringify({
+          operation: "/newUser",
+          user_id: user?.uid ?? "",
+          username: user?.email,
+        })
+      );
     };
 
     ws.onmessage = function (evt) {
       const msg = JSON.parse(evt.data);
-
+      client.setQueriesData(["messages"], (prev) => [...prev, msg]);
       console.log(msg);
     };
 
-    ws.onclose = function () {};
+    ws.onclose = function () {
+      console.log("disconnected");
+    };
 
     setSocket(ws);
 
     return () => {
-      ws.close();
+      // ws.close();
     };
-  }, [user, loading, error]);
+  }, [user]);
 
   return (
     <SocketContext.Provider value={{ socket, messages: [] }}>

@@ -6,11 +6,14 @@ import { FirebaseError } from "firebase/app";
 import { formatFireabseAuthError } from "../../../helpers/firebaseLoginErrors";
 import { GetServerSidePropsContext } from "next";
 import { loggedInRedirect } from "@/helpers/loggedInRedirect";
+import useSocket from "@/hooks/useSocket";
 
 function Register() {
   const email = useRef<HTMLInputElement | null>(null);
   const password = useRef<HTMLInputElement | null>(null);
   const confirm = useRef<HTMLInputElement | null>(null);
+
+  const { socket } = useSocket();
 
   const router = useRouter();
 
@@ -24,7 +27,7 @@ function Register() {
         password: password.current?.value,
         confirm: confirm.current?.value,
       });
-      router.push("/");
+      // router.push("/");
     } catch (error) {
       console.error(error);
     }

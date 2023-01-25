@@ -29,7 +29,6 @@ function UserProvider({ children }: { children: React.ReactNode }) {
         setError(null);
         setLoading(false);
         setUser(user);
-        console.log(user);
         if (user) {
           Cookie.set(COOKIE_NAME, "yes");
         } else {

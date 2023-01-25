@@ -15,17 +15,18 @@ const sendMessage = ({
   recieverId?: string;
   text?: string;
 }) => {
-  if (!user || !socket || !text) {
+  if (!user || !socket || !text || !recieverId) {
+    console.log("provide all");
     return;
   }
   const message = {
-    sender: user.uid,
-    receiver: recieverId,
-    text: text,
-    data: new Date().toISOString(),
+    from: user.uid,
+    to: recieverId,
+    message: text,
+    timestamp: new Date().toISOString(),
   };
 
-  socket.send(JSON.stringify({ operation: "/message", value: message }));
+  socket.send(JSON.stringify({ operation: "/message", ...message }));
 };
 
 function useSendMessage() {
@@ -33,7 +34,13 @@ function useSendMessage() {
   const { socket } = useSocket();
 
   return useMutation({
-    mutationFn: async (text?: string, recieverId?: string) => {
+    mutationFn: async ({
+      text,
+      recieverId,
+    }: {
+      text?: string;
+      recieverId?: string;
+    }) => {
       sendMessage({ text, user, recieverId, socket });
     },
     onMutate: () => {},

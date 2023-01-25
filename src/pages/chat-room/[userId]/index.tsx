@@ -10,6 +10,7 @@ import { GetServerSidePropsContext } from "next";
 import useUser from "@/hooks/useUser";
 import { useQuery } from "@tanstack/react-query";
 import useMessages from "@/hooks/useMessages";
+import useSendMessage from "@/hooks/useSendMessage";
 
 function DmChat() {
   const { query } = useRouter();
@@ -17,26 +18,28 @@ function DmChat() {
   const { socket } = useSocket();
   const { user } = useUser();
   const { userId: recieverId } = query;
+
   const { data: messages, isLoading: loadingMessages } = useMessages(
     String(recieverId)
   );
+  const { mutate } = useSendMessage();
 
   const text = useRef<HTMLInputElement>(null);
 
   const sendMessage = (e: React.FormEvent) => {
     e.preventDefault();
+    mutate({ text: text.current?.value, recieverId: recieverId as string });
+    //   if (!user || !socket || !text.current?.value) {
+    //     return;
+    //   }
+    //   const message = {
+    //     from: user.uid,
+    //     to: recieverId,
+    //     message: text.current.value,
+    //     timestamp: new Date().toISOString(),
+    //   };
 
-    if (!user || !socket || !text.current?.value) {
-      return;
-    }
-    const message = {
-      sender: user.uid,
-      receiver: recieverId,
-      text: text.current.value,
-      data: new Date().toISOString(),
-    };
-
-    socket.send(JSON.stringify({ operation: "/message", value: message }));
+    //   socket.send(JSON.stringify({ operation: "/message", value: message }));
     text.current.value = "";
   };
 
@@ -46,13 +49,17 @@ function DmChat() {
         <header className="  absolute top-0 left-0 flex w-full items-center justify-between bg-gradient-to-b from-slate-800 via-slate-800/80 py-4">
           <Link href={"/"}>&#8592; back</Link>
           <h1>
-            {users?.filter((user) => user.uid === recieverId)[0]?.email ?? ""}
+            {users?.filter((user) => user.user_id === recieverId)[0]
+              ?.username ?? ""}
           </h1>
         </header>
         <div className="flex h-full max-h-screen w-full flex-col-reverse overflow-y-scroll pt-16 pb-4">
           {/* chat messages */}
           {messages?.map((message) => (
-            <ChatMessage {...message} key={message.date + message.text} />
+            <ChatMessage
+              {...message}
+              key={message.timestamp + message.message}
+            />
           ))}
         </div>
         <form onSubmit={sendMessage} className="flex w-full  pb-6">

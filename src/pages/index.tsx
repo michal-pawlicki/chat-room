@@ -58,14 +58,14 @@ function ChatRoom() {
         <div className="mx-auto w-full max-w-xs divide-y rounded-lg border p-2 text-slate-50">
           {users?.map((user) => (
             <Link
-              key={user?.uid + user.email}
-              href={"/chat-room/" + encodeURIComponent(user.uid)}
+              key={user?.user_id + user.username}
+              href={"/chat-room/" + encodeURIComponent(user.user_id)}
             >
               <div
                 className="rounded-md px-4 py-2 text-center transition hover:bg-slate-700"
-                key={user.uid}
+                key={user.user_id}
               >
-                {user.email}
+                {user.username}
               </div>
             </Link>
           ))}

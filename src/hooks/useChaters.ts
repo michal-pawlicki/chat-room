@@ -15,11 +15,11 @@ const fetchChatters = async (userId?: string) => {
       headers: {
         "Content-type": "application/json",
       },
-      method: "GET",
+      method: "POST",
     });
     const data: User[] = await res.json();
 
-    return data.filter((user) => user.uid != userId) ?? [];
+    return data.filter((user) => user.user_id != userId) ?? [];
   } catch (err) {
     //TODO: handle errors
   }
